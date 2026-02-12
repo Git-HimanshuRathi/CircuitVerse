@@ -3,7 +3,7 @@
 /* Dialog content area — fix jQuery UI height clipping */
 .ui-dialog[aria-describedby="fsm-editor-dialog"] .ui-dialog-content {
     height: auto !important;
-    min-height: 420px !important;
+    min-height: 440px !important;
     overflow: visible !important;
     padding: 10px;
 }
@@ -11,28 +11,107 @@
 /* Canvas container */
 #fsm-editor-container {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 10px;
 }
 
-/* Canvas — matches CircuitVerse canvas style */
+/* ==============================
+   Toolbar
+   ============================== */
+.fsm-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 8px;
+    background: #3a3a3a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    width: 650px;
+    box-sizing: border-box;
+}
+
+.fsm-toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #ccc;
+    font:
+        12px Inter,
+        Raleway,
+        sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+}
+
+.fsm-toolbar-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.fsm-toolbar-btn.active {
+    background: #42b983;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.fsm-toolbar-icon {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.fsm-toolbar-label {
+    font-size: 11px;
+}
+
+.fsm-toolbar-sep {
+    width: 1px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    margin: 0 4px;
+}
+
+.fsm-toolbar-status {
+    margin-left: auto;
+    font:
+        italic 11px Inter,
+        Raleway,
+        sans-serif;
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+
+/* ==============================
+   Canvas
+   ============================== */
 .fsm-editor-canvas {
     width: 650px;
-    height: 400px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    cursor: crosshair;
+    height: 370px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    cursor: default;
     display: block;
     background: #fff;
 }
 
 .fsm-editor-canvas:focus {
     outline: none;
-    border-color: #42b983;
-    box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.2);
+    box-shadow: 0 0 0 2px rgba(66, 185, 131, 0.25);
 }
 
-/* Inline text editing */
+/* ==============================
+   Inline text editing
+   ============================== */
 .fsm-inline-edit {
     background: #fff;
     border: 2px solid #42b983;
@@ -47,7 +126,9 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Right-click context menu — matches CircuitVerse panel style */
+/* ==============================
+   Context menu
+   ============================== */
 .fsm-context-menu {
     position: fixed;
     background: #454545;

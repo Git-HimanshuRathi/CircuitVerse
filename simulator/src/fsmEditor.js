@@ -182,12 +182,13 @@ class FSMTransition {
 
     _drawSelfLoop(ctx, state, colors, isSelected, isHovered) {
         const r = state.radius;
-        const loopRadius = 20;
+        const loopRadius = r * 0.55;
         const cx = state.x;
-        const cy = state.y - r - loopRadius;
+        const cy = state.y - r - loopRadius + 2;
 
+        // Draw full circle
         ctx.beginPath();
-        ctx.arc(cx, cy, loopRadius, 0.3 * Math.PI, 0.7 * Math.PI);
+        ctx.arc(cx, cy, loopRadius, 0, 2 * Math.PI);
         ctx.strokeStyle = isSelected
             ? colors.selected
             : isHovered
@@ -196,13 +197,19 @@ class FSMTransition {
         ctx.lineWidth = isSelected ? 3 : 2;
         ctx.stroke();
 
-        // Arrowhead at right end
-        const angle = 0.3 * Math.PI;
-        const ax = cx + loopRadius * Math.cos(angle);
-        const ay = cy + loopRadius * Math.sin(angle);
-        this._drawArrowHead(ctx, ax, ay, angle + Math.PI / 2, ctx.strokeStyle);
+        // Arrowhead at the bottom-right where loop meets state
+        const arrowAngle = 0.25 * Math.PI;
+        const ax = cx + loopRadius * Math.cos(arrowAngle);
+        const ay = cy + loopRadius * Math.sin(arrowAngle);
+        this._drawArrowHead(
+            ctx,
+            ax,
+            ay,
+            arrowAngle + Math.PI / 2,
+            ctx.strokeStyle,
+        );
 
-        // Label
+        // Label above the loop
         ctx.fillStyle = colors.text;
         ctx.font = "12px Inter, Raleway, sans-serif";
         ctx.textAlign = "center";
@@ -302,9 +309,9 @@ class FSMTransition {
         if (this.from === this.to) {
             // Self-loop hit test
             const r = fromState.radius;
-            const loopRadius = 20;
+            const loopRadius = r * 0.55;
             const cx = fromState.x;
-            const cy = fromState.y - r - loopRadius;
+            const cy = fromState.y - r - loopRadius + 2;
             const dx = px - cx;
             const dy = py - cy;
             const d = Math.sqrt(dx * dx + dy * dy);
@@ -572,6 +579,10 @@ export class FSMEditor {
         this.history = new UndoHistory();
         this.contextMenu = new ContextMenu();
 
+        // Current tool mode: 'select' | 'addState' | 'addTransition'
+        this.mode = "select";
+        this.transitionSource = null; // For addTransition mode: first state clicked
+
         // Interaction state
         this.selectedState = null;
         this.selectedTransition = null;
@@ -589,6 +600,9 @@ export class FSMEditor {
         this.editingState = null;
         this.editInput = null;
 
+        // Toolbar buttons reference
+        this.toolbarBtns = {};
+
         this.init();
     }
 
@@ -598,12 +612,15 @@ export class FSMEditor {
             return;
         }
 
+        // Create toolbar
+        this._createToolbar();
+
         // Create canvas
         this.canvas = document.createElement("canvas");
         this.canvas.width = 650;
-        this.canvas.height = 400;
+        this.canvas.height = 370;
         this.canvas.className = "fsm-editor-canvas";
-        this.canvas.tabIndex = 0; // Make focusable for keyboard events
+        this.canvas.tabIndex = 0;
         this.container.appendChild(this.canvas);
         this.ctx = this.canvas.getContext("2d");
 
@@ -623,6 +640,139 @@ export class FSMEditor {
         document.addEventListener("keydown", this._keyHandler);
 
         this.render();
+    }
+
+    // --- Toolbar ---
+    _createToolbar() {
+        const toolbar = document.createElement("div");
+        toolbar.className = "fsm-toolbar";
+
+        const buttons = [
+            {
+                id: "select",
+                icon: "⊹",
+                label: "Select",
+                tooltip: "Select / Move (V)",
+            },
+            {
+                id: "addState",
+                icon: "◯",
+                label: "State",
+                tooltip: "Add State (S)",
+            },
+            {
+                id: "addTransition",
+                icon: "→",
+                label: "Transition",
+                tooltip: "Add Transition (T)",
+            },
+            { id: "sep1", separator: true },
+            {
+                id: "delete",
+                icon: "✕",
+                label: "Delete",
+                tooltip: "Delete Selected (Del)",
+                action: true,
+            },
+            {
+                id: "undo",
+                icon: "↺",
+                label: "Undo",
+                tooltip: "Undo (Ctrl+Z)",
+                action: true,
+            },
+        ];
+
+        buttons.forEach((btn) => {
+            if (btn.separator) {
+                const sep = document.createElement("div");
+                sep.className = "fsm-toolbar-sep";
+                toolbar.appendChild(sep);
+                return;
+            }
+
+            const el = document.createElement("button");
+            el.className = "fsm-toolbar-btn";
+            el.title = btn.tooltip;
+            el.innerHTML = `<span class="fsm-toolbar-icon">${btn.icon}</span><span class="fsm-toolbar-label">${btn.label}</span>`;
+
+            if (btn.action) {
+                // Action buttons (one-shot)
+                el.addEventListener("click", () =>
+                    this._handleToolbarAction(btn.id),
+                );
+            } else {
+                // Mode buttons (toggle)
+                el.addEventListener("click", () => this._setMode(btn.id));
+                if (btn.id === "select") el.classList.add("active");
+            }
+
+            this.toolbarBtns[btn.id] = el;
+            toolbar.appendChild(el);
+        });
+
+        // Status text
+        this.statusText = document.createElement("span");
+        this.statusText.className = "fsm-toolbar-status";
+        this.statusText.textContent = "";
+        toolbar.appendChild(this.statusText);
+
+        this.container.appendChild(toolbar);
+    }
+
+    _setMode(mode) {
+        this.mode = mode;
+        this.transitionSource = null;
+
+        // Update active button
+        ["select", "addState", "addTransition"].forEach((m) => {
+            if (this.toolbarBtns[m]) {
+                this.toolbarBtns[m].classList.toggle("active", m === mode);
+            }
+        });
+
+        // Update status text and cursor
+        const statusMap = {
+            select: "Click to select, drag to move, right-click for options",
+            addState: "Click on canvas to place a new state",
+            addTransition: "Click source state, then click target state",
+        };
+        this.statusText.textContent = statusMap[mode] || "";
+
+        const cursorMap = {
+            select: "default",
+            addState: "crosshair",
+            addTransition: "pointer",
+        };
+        if (this.canvas) {
+            this.canvas.style.cursor = cursorMap[mode] || "default";
+        }
+
+        this.render();
+    }
+
+    _handleToolbarAction(action) {
+        if (action === "delete") {
+            if (this.selectedState) {
+                this._saveSnapshot();
+                this.fsm.removeState(this.selectedState.id);
+                this.selectedState = null;
+                this.render();
+            } else if (this.selectedTransition) {
+                this._saveSnapshot();
+                this.fsm.removeTransition(this.selectedTransition.id);
+                this.selectedTransition = null;
+                this.render();
+            } else {
+                this.statusText.textContent = "Nothing selected to delete";
+            }
+        } else if (action === "undo") {
+            if (this.history.canUndo) {
+                const snap = this.history.pop();
+                this._restoreSnapshot(snap);
+                this.render();
+            }
+        }
     }
 
     // --- Snapshot for undo ---
@@ -707,8 +857,58 @@ export class FSMEditor {
         const pos = this._getMousePos(e);
         const state = this._getStateAt(pos.x, pos.y);
 
+        // --- Mode: Add State ---
+        if (this.mode === "addState") {
+            const output = prompt(
+                "Enter Moore output for new state (e.g., 0 or 1):",
+            );
+            if (output === null) return;
+            const trimmedOutput = output.trim();
+            if (trimmedOutput === "") {
+                alert("Output cannot be empty.");
+                return;
+            }
+
+            this._saveSnapshot();
+            const newState = this.fsm.addState(pos.x, pos.y);
+            newState.output = trimmedOutput;
+            this._clamp(newState);
+            this.selectedState = newState;
+            this.selectedTransition = null;
+            this.statusText.textContent = `Created state "${newState.name}" with output /${trimmedOutput}`;
+            this.render();
+            return;
+        }
+
+        // --- Mode: Add Transition ---
+        if (this.mode === "addTransition") {
+            if (state) {
+                if (!this.transitionSource) {
+                    // First click — select source
+                    this.transitionSource = state;
+                    this.selectedState = state;
+                    this.statusText.textContent = `Source: "${state.name}" — now click target state`;
+                    this.render();
+                } else {
+                    // Second click — select target and create
+                    this._createTransition(this.transitionSource, state);
+                    this.transitionSource = null;
+                    this.statusText.textContent =
+                        "Click source state, then click target state";
+                }
+            } else {
+                // Clicked empty area — reset source
+                this.transitionSource = null;
+                this.statusText.textContent =
+                    "Click on a state to start a transition";
+                this.render();
+            }
+            return;
+        }
+
+        // --- Mode: Select (default) ---
         if (e.shiftKey && state) {
-            // Start shift-drag for transition
+            // Shift-drag for transition (legacy shortcut still works)
             this.isShiftDragging = true;
             this.shiftDragFrom = state;
             this.mouseX = pos.x;
@@ -717,21 +917,21 @@ export class FSMEditor {
         }
 
         if (state) {
-            // Select and start dragging
             this.selectedState = state;
             this.selectedTransition = null;
             this.draggingState = state;
             this.dragStartX = pos.x - state.x;
             this.dragStartY = pos.y - state.y;
+            this.statusText.textContent = `Selected state "${state.name}"`;
             this.render();
             return;
         }
 
-        // Check transitions
         const trans = this._getTransitionAt(pos.x, pos.y);
         if (trans) {
             this.selectedTransition = trans;
             this.selectedState = null;
+            this.statusText.textContent = `Selected transition "${trans.label}"`;
             this.render();
             return;
         }
@@ -739,6 +939,7 @@ export class FSMEditor {
         // Deselect
         this.selectedState = null;
         this.selectedTransition = null;
+        this.statusText.textContent = "";
         this.render();
     }
 
@@ -813,12 +1014,24 @@ export class FSMEditor {
             return;
         }
 
-        // Double-click on empty canvas: add state
+        // Double-click on empty canvas: add state with output prompt
+        const output = prompt(
+            "Enter Moore output for new state (e.g., 0 or 1):",
+        );
+        if (output === null) return;
+        const trimmedOutput = output.trim();
+        if (trimmedOutput === "") {
+            alert("Output cannot be empty.");
+            return;
+        }
+
         this._saveSnapshot();
         const newState = this.fsm.addState(pos.x, pos.y);
+        newState.output = trimmedOutput;
         this._clamp(newState);
         this.selectedState = newState;
         this.selectedTransition = null;
+        this.statusText.textContent = `Created state "${newState.name}" with output /${trimmedOutput}`;
         this.render();
     }
 
@@ -893,6 +1106,8 @@ export class FSMEditor {
     }
 
     _onKeyDown(e) {
+        if (this.editingState) return; // Don't handle shortcuts while editing
+
         // Undo
         if ((e.ctrlKey || e.metaKey) && e.key === "z") {
             e.preventDefault();
@@ -906,20 +1121,24 @@ export class FSMEditor {
 
         // Delete
         if (e.key === "Delete" || e.key === "Backspace") {
-            if (this.editingState) return; // Don't delete while editing
             e.preventDefault();
+            this._handleToolbarAction("delete");
+            return;
+        }
 
-            if (this.selectedState) {
-                this._saveSnapshot();
-                this.fsm.removeState(this.selectedState.id);
-                this.selectedState = null;
-                this.render();
-            } else if (this.selectedTransition) {
-                this._saveSnapshot();
-                this.fsm.removeTransition(this.selectedTransition.id);
-                this.selectedTransition = null;
-                this.render();
+        // Mode shortcuts
+        if (e.key === "v" || e.key === "V") {
+            this._setMode("select");
+            return;
+        }
+        if (e.key === "s" || e.key === "S") {
+            if (!e.ctrlKey && !e.metaKey) {
+                this._setMode("addState");
+                return;
             }
+        }
+        if (e.key === "t" || e.key === "T") {
+            this._setMode("addTransition");
         }
     }
 
@@ -983,7 +1202,9 @@ export class FSMEditor {
 
     // --- Transition creation ---
     _createTransition(fromState, toState) {
-        const input = prompt("Enter input condition (e.g., 0 or 1):", "0");
+        const input = prompt(
+            `Transition from "${fromState.name}" to "${toState.name}"\n\nEnter input condition (e.g., 0, 1, 00, 01, etc.):`,
+        );
         if (input === null) return;
 
         const trimmed = input.trim();
@@ -996,8 +1217,10 @@ export class FSMEditor {
         const t = this.fsm.addTransition(fromState.id, toState.id, trimmed);
         if (!t) {
             alert(
-                `Duplicate: transition from ${fromState.name} to ${toState.name} with input "${trimmed}" already exists.`,
+                `Duplicate: transition from "${fromState.name}" to "${toState.name}" with input "${trimmed}" already exists.`,
             );
+        } else {
+            this.statusText.textContent = `Added transition ${fromState.name} →(${trimmed})→ ${toState.name}`;
         }
         this.render();
     }
@@ -1070,12 +1293,12 @@ export class FSMEditor {
         // Empty canvas hint
         if (this.fsm.states.length === 0) {
             ctx.fillStyle = colors.text;
-            ctx.globalAlpha = 0.4;
+            ctx.globalAlpha = 0.25;
             ctx.font = "14px Inter, Raleway, sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText(
-                "Double-click to add a state",
+                "Use the toolbar above to add states and transitions",
                 canvas.width / 2,
                 canvas.height / 2,
             );
