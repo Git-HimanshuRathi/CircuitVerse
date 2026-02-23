@@ -28,12 +28,16 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label"><strong>Reason</strong></label>
+              <%= f.label :reason, class: "form-label" do %>
+                <strong>Reason</strong>
+              <% end %>
               <%= f.text_field :reason, class: "form-control", placeholder: "Enter reason for reporting" %>
             </div>
 
             <div class="mb-3">
-              <label class="form-label"><strong>Description (Optional)</strong></label>
+              <%= f.label :description, class: "form-label" do %>
+                <strong>Description (Optional)</strong>
+              <% end %>
               <%= f.text_area :description, class: "form-control", rows: 5, placeholder: "Provide additional details..." %>
             </div>
 
