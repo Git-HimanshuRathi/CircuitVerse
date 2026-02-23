@@ -2,7 +2,7 @@
 
 ## Core Kamal Setup
 
-- [ ] Create hooks directory — `.kamal/hooks/`
+- [x] Create hooks directory — `.kamal/hooks/`
 
 - [ ] Update Kamal deploy configuration — `config/deploy.yml`
 
