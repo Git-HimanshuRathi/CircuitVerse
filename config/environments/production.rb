@@ -35,8 +35,7 @@ Rails.application.configure do
   config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # Uncomment this if you want to enforce SSL (recommended for production)
-  # config.force_ssl = true
+  config.force_ssl = true
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -54,7 +53,7 @@ Rails.application.configure do
 
   # Log configuration
   config.log_tags = [:request_id]
-  config.log_level = :debug  # Keep debug level as per original config
+  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info").to_sym
 
   # If logging to STDOUT
   if ENV["RAILS_LOG_TO_STDOUT"].present?
@@ -111,13 +110,11 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [:id]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
+  config.hosts << "staging.circuitverse.org"
+  config.hosts << "circuitverse.org"
+
   # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # ============================================================================
   # LOGSTASH CONFIGURATION (preserved from Rails 7 - commented out)

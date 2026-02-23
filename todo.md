@@ -8,7 +8,7 @@
 
 - [x] Create secrets template — `.kamal/secrets`
 
-- [ ] Update Rails production configuration — `config/environments/production.rb`
+- [x] Update Rails production configuration — `config/environments/production.rb`
 
 - [ ] Create Kamal deployment documentation — `.kamal/kamal_deployment.md`
 
