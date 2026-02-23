@@ -4,7 +4,7 @@
 
 - [x] Create hooks directory — `.kamal/hooks/`
 
-- [ ] Update Kamal deploy configuration — `config/deploy.yml`
+- [x] Update Kamal deploy configuration — `config/deploy.yml`
 
 - [ ] Create secrets template — `.kamal/secrets`
 
