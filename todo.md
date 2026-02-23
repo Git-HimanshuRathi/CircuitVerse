@@ -12,7 +12,7 @@
 
 - [x] Create Kamal deployment documentation — `.kamal/kamal_deployment.md`
 
-- [ ] Update Docker installation documentation — `installation_docs/docker.md`
+- [x] Update Docker installation documentation — `installation_docs/docker.md`
 
 ## Essential Deployment Hooks (Pre & Post only)
 
