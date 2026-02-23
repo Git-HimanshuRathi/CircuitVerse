@@ -10,7 +10,7 @@
 
 - [x] Update Rails production configuration — `config/environments/production.rb`
 
-- [ ] Create Kamal deployment documentation — `.kamal/kamal_deployment.md`
+- [x] Create Kamal deployment documentation — `.kamal/kamal_deployment.md`
 
 - [ ] Update Docker installation documentation — `installation_docs/docker.md`
 
