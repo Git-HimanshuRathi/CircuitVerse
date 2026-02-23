@@ -6,7 +6,7 @@
 
 - [x] Update Kamal deploy configuration — `config/deploy.yml`
 
-- [ ] Create secrets template — `.kamal/secrets`
+- [x] Create secrets template — `.kamal/secrets`
 
 - [ ] Update Rails production configuration — `config/environments/production.rb`
 
