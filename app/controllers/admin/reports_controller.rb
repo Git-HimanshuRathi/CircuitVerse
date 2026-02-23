@@ -4,18 +4,20 @@ module Admin
   class ReportsController < BaseController
     def index
       @reports = Report
-                 .includes(:reporter, reported_user: :user_bans)
+                 .preload(:reporter, reported_user: :user_bans)
                  .order(created_at: :desc)
 
       # Filter by status (open / action_taken)
       @reports = @reports.where(status: params[:status]) if params[:status].present?
 
       # Filter banned users
-      return if params[:banned].blank?
+      if params[:banned].present?
+        @reports = @reports
+                   .joins(:reported_user)
+                   .where(users: { banned: true })
+      end
 
-      @reports = @reports
-                 .joins(:reported_user)
-                 .where(users: { banned: true })
+      @reports = @reports.page(params[:page]).per(25)
     end
   end
 end
