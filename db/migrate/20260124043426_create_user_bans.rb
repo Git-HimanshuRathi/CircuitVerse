@@ -3,7 +3,7 @@ class CreateUserBans < ActiveRecord::Migration[8.0]
     create_table :user_bans do |t|
       t.references :user, null: false, foreign_key: true
       t.references :admin, null: false, foreign_key: { to_table: :users }
-      t.references :report, foreign_key: false # Will add FK later when reports table exists
+      t.references :report, foreign_key: true # Reports table created in earlier migration
       t.text :reason, null: false
       t.datetime :lifted_at # NULL = still active
 
