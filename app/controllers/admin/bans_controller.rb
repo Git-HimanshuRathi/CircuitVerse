@@ -13,7 +13,7 @@ module Admin
       if @user == current_user
         flash[:alert] = t(".cannot_ban_yourself")
       elsif @user.ban!(admin: current_user, reason: ban_params[:reason], report: find_report)
-        flash[:notice] = "User #{@user.name} has been banned."
+        flash[:notice] = t(".ban_success", name: @user.name)
         close_all_reports_for_user
       else
         flash[:alert] = t(".ban_failed")
@@ -24,7 +24,7 @@ module Admin
 
     def unban
       if @user.unban!(admin: current_user)
-        flash[:notice] = "User #{@user.name} has been unbanned."
+        flash[:notice] = t(".unban_success", name: @user.name)
       else
         flash[:alert] = t(".unban_failed")
       end

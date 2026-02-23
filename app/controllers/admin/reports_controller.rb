@@ -4,7 +4,7 @@ module Admin
   class ReportsController < BaseController
     def index
       @reports = Report
-                 .includes(:reporter, :reported_user)
+                 .includes(:reporter, reported_user: :user_bans)
                  .order(created_at: :desc)
 
       # Filter by status (open / action_taken)

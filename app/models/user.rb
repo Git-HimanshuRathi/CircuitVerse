@@ -35,6 +35,10 @@ class User < ApplicationRecord
   has_many :user_bans, dependent: :destroy
   has_many :imposed_bans, class_name: "UserBan", foreign_key: "admin_id", dependent: :nullify
 
+  # Report associations
+  has_many :reports_filed, class_name: "Report", foreign_key: "reporter_id", dependent: :destroy
+  has_many :reports_received, class_name: "Report", foreign_key: "reported_user_id", dependent: :destroy
+
   # noticed configuration
   has_many :noticed_notifications, as: :recipient, dependent: :destroy
 
@@ -118,6 +122,7 @@ class User < ApplicationRecord
 
   def ban!(admin:, reason:, report: nil)
     return false if self == admin # Cannot self-ban
+    return false if banned? # Already banned
 
     transaction do
       user_bans.create!(
@@ -137,7 +142,11 @@ class User < ApplicationRecord
   def unban!(admin:)
     transaction do
       active_ban = user_bans.active.last
-      active_ban&.lift!(lifted_by: admin)
+      if active_ban
+        active_ban.lift!(lifted_by: admin)
+      else
+        Rails.logger.warn("No active ban found for user #{id}, clearing banned flag only")
+      end
       update!(banned: false)
     end
     true

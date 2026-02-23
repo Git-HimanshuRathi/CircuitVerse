@@ -21,6 +21,6 @@ class UserBan < ApplicationRecord
   end
 
   def lift!(lifted_by:)
-    update(lifted_at: Time.current, lifted_by: lifted_by)
+    update!(lifted_at: Time.current, lifted_by: lifted_by)
   end
 end
