@@ -14,10 +14,10 @@
 **Steps to setup**
 1. Fork current repository
 2. Clone the forked repository
-   ```bash
-   git clone git@github.com:<username></username>/CircuitVerse.git --recursive
-   ```
-   - Use `git submodule update --init` to get the contents of the submodule if you missed using the `--recursive` option while cloning the repository or if you have already done so.
+    ```bash
+    git clone git@github.com:<username></username>/CircuitVerse.git --recursive
+    ```
+    - Use `git submodule update --init` to get the contents of the submodule if you missed using the `--recursive` option while cloning the repository or if you have already done so.
 3. Open `CircuitVerse` directory
 4. Open `PowerShell` in the current directory
 5. Run `./bin/docker_run.ps1`
@@ -55,10 +55,10 @@ After removing Docker Desktop, proceed with the installation of Docker Engine as
 **Steps to setup**
 1. Fork current repository
 2. Clone the forked repository
-   ```bash
-   git clone git@github.com:<username></username>/CircuitVerse.git --recursive
-   ```
-   - Use `git submodule update --init` to get the contents of the submodule if you missed using the `--recursive` option while cloning the repository or if you have already done so.
+    ```bash
+    git clone git@github.com:<username></username>/CircuitVerse.git --recursive
+    ```
+    - Use `git submodule update --init` to get the contents of the submodule if you missed using the `--recursive` option while cloning the repository or if you have already done so.
 3. Open `CircuitVerse` directory
 4. Open `Terminal` in the current directory
 5. Run `./bin/docker_run`
@@ -79,10 +79,10 @@ If you required to restart the server
 **Steps to setup**
 1. Fork current repository
 2. Clone the forked repository
-   ```bash
-   git clone git@github.com:<username></username>/CircuitVerse.git --recursive
-   ```
-   - Use `git submodule update --init` to get the contents of the submodule if you missed using the `--recursive` option while cloning the repository or if you have already done so.
+    ```bash
+    git clone git@github.com:<username></username>/CircuitVerse.git --recursive
+    ```
+    - Use `git submodule update --init` to get the contents of the submodule if you missed using the `--recursive` option while cloning the repository or if you have already done so.
 3. Open `CircuitVerse` directory
 4. Open `Terminal` in the current directory
 5. Run `./bin/docker_run`
