@@ -14,7 +14,7 @@
             <% if @report.errors.any? %>
               <div class="alert alert-danger">
                 <h5>Please fix the following errors:</h5>
-                <ul class="mb-0">
+                <ul class="mb-0" role="list">
                   <% @report.errors.full_messages.each do |message| %>
                     <li><%= message %></li>
                   <% end %>
