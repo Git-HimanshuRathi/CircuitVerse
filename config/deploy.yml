@@ -15,23 +15,16 @@ servers:
   sidekiq:
     hosts:
       - <%= ENV["SERVER_IP"] %>
-    cmd: bundle exec sidekiq -e production -q default -q mailers
     options:
       "add-host": host.docker.internal:host-gateway
+    cmd: bundle exec sidekiq -e production -q default -q mailers
 
-# Kamal 2.0 proxy configuration (replaces Traefik labels)
-proxy:
-  ssl: true
-  host: staging.circuitverse.org
-
-# Container registry (GitHub Container Registry)
 registry:
   server: ghcr.io
   username: circuitverse
   password:
     - KAMAL_GHCR_REGISTRY_PASSWORD
 
-# Environment variables
 env:
   clear:
     RAILS_SERVE_STATIC_FILES: true
@@ -52,25 +45,19 @@ env:
     - RECAPTCHA_SITE_KEY
     - RECAPTCHA_SECRET_KEY
 
-# SSH configuration
 ssh:
   user: ubuntu
 
-# Builder configuration
 builder:
   dockerfile: Dockerfile.production
   arch: amd64
 
-# Accessories (supporting services)
 accessories:
   yosys2digitaljs-server:
     image: ghcr.io/circuitverse/yosys2digitaljs-server:master
     host: <%= ENV["SERVER_IP"] %>
     port: 2812
 
-# Health check configuration
 healthcheck:
   port: 3000
   max_attempts: 8
-  # path: /up
-  # interval: 5
