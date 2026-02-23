@@ -6,8 +6,7 @@ RSpec.describe UserBan, type: :model do
   describe "associations" do
     it { is_expected.to belong_to(:user) }
     it { is_expected.to belong_to(:admin).class_name("User") }
-    # Report association will be tested after Report model is implemented
-    # it { is_expected.to belong_to(:report).optional }
+    it { is_expected.to belong_to(:report).optional }
   end
 
   describe "validations" do
