@@ -12,7 +12,6 @@ RSpec.describe UserBan, type: :model do
   describe "validations" do
     it { is_expected.to validate_presence_of(:reason) }
     it { is_expected.to validate_presence_of(:user_id) }
-    it { is_expected.to validate_presence_of(:admin_id) }
   end
 
   describe "scopes" do

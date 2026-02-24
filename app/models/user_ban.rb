@@ -10,7 +10,6 @@ class UserBan < ApplicationRecord
 
   # rubocop:disable Rails/RedundantPresenceValidationOnBelongsTo
   validates :user_id, presence: true
-  validates :admin_id, presence: true
   # rubocop:enable Rails/RedundantPresenceValidationOnBelongsTo
 
   scope :active, -> { where(lifted_at: nil) }
