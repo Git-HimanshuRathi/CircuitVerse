@@ -19,12 +19,7 @@
 
   <% if @reports.empty? %>
     <div class="alert alert-info">
-      <% if defined?(Report) %>
         No reports found.
-      <% else %>
-        <strong>Report system not yet available.</strong>
-        <p class="mb-0">The Report model has not been implemented yet. Please coordinate with your teammate.</p>
-      <% end %>
     </div>
   <% else %>
     <div class="table-responsive">
@@ -87,7 +82,7 @@
     </div>
 
     <% if @reports.respond_to?(:total_pages) %>
-      <%= paginate @reports %>
+      <%= will_paginate @reports %>
     <% end %>
   <% end %>
 </div>
