@@ -542,7 +542,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_26_060000) do
 
   create_table "user_bans", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.bigint "admin_id", null: false
+    t.bigint "admin_id"
     t.bigint "report_id"
     t.text "reason", null: false
     t.datetime "lifted_at"
