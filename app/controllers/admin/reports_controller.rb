@@ -17,7 +17,7 @@ module Admin
                    .where(users: { banned: true })
       end
 
-      @reports = @reports.page(params[:page]).per(25)
+      @reports = @reports.paginate(page: params[:page], per_page: 25)
     end
   end
 end
