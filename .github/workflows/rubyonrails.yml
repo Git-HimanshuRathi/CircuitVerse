@@ -7,6 +7,23 @@ jobs:
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        test_group:
+          - name: unit
+            paths: spec/models spec/policies spec/helpers spec/mailers spec/services spec/components spec/decorators spec/jobs spec/lib spec/tasks spec/views
+            needs_playwright: false
+          - name: integration
+            paths: spec/requests spec/controllers
+            needs_playwright: false
+          - name: system
+            paths: spec/system
+            needs_playwright: true
+
+    name: test (${{ matrix.test_group.name }})
+
     services:
       postgres:
         image: postgres:16-alpine
@@ -56,6 +73,7 @@ jobs:
       - run: yarn install
 
       - name: Install Playwright and browsers
+        if: matrix.test_group.needs_playwright
         run: |
           export PLAYWRIGHT_CLI_VERSION=$(bundle exec ruby -e 'require "playwright"; puts Playwright::COMPATIBLE_PLAYWRIGHT_VERSION.strip')
           yarn add -D "playwright@$PLAYWRIGHT_CLI_VERSION"
@@ -82,11 +100,11 @@ jobs:
           openssl rsa -in config/private.pem -outform PEM -pubout -out config/public.pem
 
       - name: Run tests
-        run: bundle exec rspec
+        run: bundle exec rspec ${{ matrix.test_group.paths }}
 
       - name: Keep screenshots from failed system tests
         uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() && matrix.test_group.name == 'system'
         with:
           name: screenshots
           path: ${{ github.workspace }}/tmp/capybara
@@ -98,15 +116,29 @@ jobs:
           bodyContains: "[undercover]"
           noReply: "true"
 
+  type-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
       - name: Static type checking
         run: |
           bundle exec rbs collection install
           bundle exec steep check
+
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
