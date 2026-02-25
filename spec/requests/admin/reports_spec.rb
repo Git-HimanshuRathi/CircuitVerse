@@ -35,7 +35,6 @@ RSpec.describe "Admin::Reports", type: :request do
         get admin_reports_path
         expect(response.body).to include("User Reports")
       end
-
     end
   end
 end
