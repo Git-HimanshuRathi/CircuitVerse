@@ -12,6 +12,7 @@ class CreateReports < ActiveRecord::Migration[8.0]
 
     add_index :reports, :status
     add_index :reports, [:reported_user_id, :created_at]
+    add_index :reports, [:reporter_id, :reported_user_id, :status], unique: true, name: "idx_reports_unique_open_per_pair"
   end
 end
 

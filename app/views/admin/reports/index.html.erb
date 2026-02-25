@@ -10,6 +10,13 @@
     </div>
   </div>
 
+  <% if flash[:notice] %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= flash[:notice] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+
   <% if flash[:alert] %>
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
       <%= flash[:alert] %>
@@ -120,12 +127,13 @@
                 <div class="form-text">This will be recorded in the audit trail.</div>
               </div>
 
-              <% if report.reported_user.ban_history.any? %>
+              <% ban_records = report.reported_user.user_bans.sort_by(&:created_at).reverse %>
+              <% if ban_records.any? %>
                 <div class="card bg-light">
                   <div class="card-header">Previous Ban History</div>
                   <div class="card-body">
                     <ul class="list-unstyled mb-0">
-                      <% report.reported_user.ban_history.limit(3).each do |ban| %>
+                      <% ban_records.first(3).each do |ban| %>
                         <li>
                           <small>
                             <strong><%= ban.created_at.strftime('%Y-%m-%d') %></strong> -

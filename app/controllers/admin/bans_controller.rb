@@ -46,17 +46,12 @@ module Admin
         return nil if params[:report_id].blank?
 
         Report.find_by(id: params[:report_id], reported_user_id: @user.id)
-      rescue NameError
-        nil
       end
 
       # Per maintainer: close ALL open reports for the user when banned
       def close_all_reports_for_user
-        Report.where(reported_user_id: @user.id, status: "open").find_each do |report|
-          report.update!(status: "action_taken")
-        end
-      rescue NameError
-        # Report model not available
+        Report.where(reported_user_id: @user.id, status: "open")
+              .update_all(status: "action_taken", updated_at: Time.current)
       end
   end
 end

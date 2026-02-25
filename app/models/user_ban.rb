@@ -2,7 +2,7 @@
 
 class UserBan < ApplicationRecord
   belongs_to :user
-  belongs_to :admin, class_name: "User"
+  belongs_to :admin, class_name: "User", optional: true
   belongs_to :report, optional: true
   belongs_to :lifted_by, class_name: "User", optional: true
 
@@ -20,6 +20,8 @@ class UserBan < ApplicationRecord
   end
 
   def lift!(lifted_by:)
+    raise ActiveRecord::RecordInvalid, self unless active?
+
     update!(lifted_at: Time.current, lifted_by: lifted_by)
   end
 end

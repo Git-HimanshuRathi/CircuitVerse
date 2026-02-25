@@ -17,10 +17,9 @@ RSpec.describe "Admin::Reports", type: :request do
     context "when logged in as non-admin" do
       before { sign_in regular_user }
 
-      it "redirects to root with access denied" do
+      it "returns forbidden status" do
         get admin_reports_path
-        expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to include("Access denied")
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
@@ -37,7 +36,7 @@ RSpec.describe "Admin::Reports", type: :request do
         expect(response.body).to include("User Reports")
       end
 
-      # NOTE: Full report functionality tests will be added when Report model is implemented
+
     end
   end
 end

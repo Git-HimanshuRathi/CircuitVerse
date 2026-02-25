@@ -10,7 +10,8 @@ class CreateUserBans < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :user_bans, [:user_id, :lifted_at] unless index_exists?(:user_bans, [:user_id, :lifted_at])
+    add_index :user_bans, :user_id, unique: true, where: "lifted_at IS NULL", name: "idx_user_bans_one_active_per_user"
+    add_index :user_bans, [:user_id, :lifted_at]
     add_index :user_bans, :admin_id unless index_exists?(:user_bans, :admin_id)
   end
 end

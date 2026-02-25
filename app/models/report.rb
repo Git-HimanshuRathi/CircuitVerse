@@ -22,6 +22,6 @@ class Report < ApplicationRecord
     def cannot_report_self
       return unless reporter && reported_user
 
-      errors.add(:base, "You cannot report yourself") if reporter_id == reported_user_id
+      errors.add(:base, I18n.t("reports.cannot_report_self")) if reporter_id == reported_user_id
     end
 end

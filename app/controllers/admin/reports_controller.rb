@@ -11,7 +11,7 @@ module Admin
       @reports = @reports.where(status: params[:status]) if params[:status].present?
 
       # Filter banned users
-      if params[:banned].present?
+      if params[:banned].present? && ActiveModel::Type::Boolean.new.cast(params[:banned])
         @reports = @reports
                    .joins(:reported_user)
                    .where(users: { banned: true })

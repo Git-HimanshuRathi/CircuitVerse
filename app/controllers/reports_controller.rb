@@ -23,7 +23,7 @@ class ReportsController < ApplicationController
   private
 
     def set_and_validate_reported_user
-      @reported_user = User.find_by(id: params[:reported_user_id] || report_params_user_id)
+      @reported_user = User.find_by(id: params[:reported_user_id].presence || report_params_user_id)
 
       unless @reported_user
         redirect_to root_path, alert: t("reports.user_not_found")

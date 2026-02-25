@@ -10,8 +10,7 @@ module Admin
       def require_admin!
         return if current_user&.admin?
 
-        flash[:alert] = t("admin.base.access_denied")
-        redirect_to root_path
+        raise ApplicationPolicy::CustomAuthException, t("admin.base.access_denied")
       end
   end
 end

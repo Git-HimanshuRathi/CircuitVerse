@@ -156,7 +156,7 @@ class User < ApplicationRecord
   end
 
   def ban_history
-    user_bans.order(created_at: :desc)
+    user_bans.sort_by(&:created_at).reverse
   end
 
   # Override Devise method to prevent banned users from signing in
@@ -187,7 +187,6 @@ class User < ApplicationRecord
       # TODO: Full session invalidation would also need to:
       # - Invalidate JWT/API tokens (requires token blacklist or versioning)
       # - Force logout existing browser sessions (requires session store integration)
-      # See: https://github.com/CircuitVerse/CircuitVerse/issues/XXXX
       return unless respond_to?(:remember_created_at)
 
       # Reset remember token to invalidate "remember me" sessions

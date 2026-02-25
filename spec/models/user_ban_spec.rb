@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe UserBan, type: :model do
   describe "associations" do
     it { is_expected.to belong_to(:user) }
-    it { is_expected.to belong_to(:admin).class_name("User") }
+    it { is_expected.to belong_to(:admin).class_name("User").optional }
     it { is_expected.to belong_to(:report).optional }
   end
 
@@ -51,6 +51,17 @@ RSpec.describe UserBan, type: :model do
 
     it "sets lifted_at to current time" do
       expect { ban.lift!(lifted_by: admin) }.to change(ban, :lifted_at).from(nil)
+    end
+
+    it "records the admin who lifted the ban" do
+      ban.lift!(lifted_by: admin)
+      ban.reload
+      expect(ban.lifted_by).to eq(admin)
+    end
+
+    it "raises error when ban is already lifted" do
+      ban.lift!(lifted_by: admin)
+      expect { ban.lift!(lifted_by: admin) }.to raise_error(ActiveRecord::RecordInvalid)
     end
   end
 end

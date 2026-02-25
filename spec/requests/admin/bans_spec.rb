@@ -18,11 +18,10 @@ RSpec.describe "Admin::Bans", type: :request do
     context "when logged in as non-admin" do
       before { sign_in regular_user }
 
-      it "redirects to root with access denied" do
+      it "returns forbidden status" do
         another_user = FactoryBot.create(:user, :confirmed)
         post ban_admin_user_path(another_user), params: { reason: "Spam" }
-        expect(response).to redirect_to(root_path)
-        expect(flash[:alert]).to include("Access denied")
+        expect(response).to have_http_status(:forbidden)
       end
     end
 
