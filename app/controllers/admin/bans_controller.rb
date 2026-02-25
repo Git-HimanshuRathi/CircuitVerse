@@ -50,8 +50,10 @@ module Admin
 
       # Per maintainer: close ALL open reports for the user when banned
       def close_all_reports_for_user
+        # rubocop:disable Rails/SkipsModelValidations
         Report.where(reported_user_id: @user.id, status: "open")
               .update_all(status: "action_taken", updated_at: Time.current)
+        # rubocop:enable Rails/SkipsModelValidations
       end
   end
 end

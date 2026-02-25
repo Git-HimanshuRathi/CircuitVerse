@@ -36,7 +36,6 @@ RSpec.describe "Admin::Reports", type: :request do
         expect(response.body).to include("User Reports")
       end
 
-
     end
   end
 end
