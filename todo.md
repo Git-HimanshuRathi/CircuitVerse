@@ -16,14 +16,14 @@
 
 ## Essential Deployment Hooks (Pre & Post only)
 
-- [ ] Pre-deploy hook — `.kamal/hooks/pre-deploy.sample`
+- [x] Pre-deploy hook — `.kamal/hooks/pre-deploy.sample`
 
-- [ ] Pre-app-boot hook — `.kamal/hooks/pre-app-boot.sample`
+- [x] Pre-app-boot hook — `.kamal/hooks/pre-app-boot.sample`
 
-- [ ] Post-app-boot hook — `.kamal/hooks/post-app-boot.sample`
+- [x] Post-app-boot hook — `.kamal/hooks/post-app-boot.sample`
 
-- [ ] Post-deploy hook — `.kamal/hooks/post-deploy.sample`
+- [x] Post-deploy hook — `.kamal/hooks/post-deploy.sample`
 
 ## Hook Permissions
 
-- [ ] Make hooks executable — `.kamal/hooks/*.sample`
+- [x] Make hooks executable — `.kamal/hooks/*.sample`

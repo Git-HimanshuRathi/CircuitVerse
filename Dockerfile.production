@@ -1,5 +1,5 @@
 # Use a multi stage build for the builder
-FROM --platform=$BUILDPLATFORM ruby:3.2.1 as builder
+FROM --platform=$BUILDPLATFORM ruby:3.2.1 AS builder
 
 # Set production environment
 ARG BUILDPLATFORM
@@ -41,7 +41,7 @@ RUN rm -rf node_modules spec
 RUN bundle exec bootsnap precompile --gemfile app/ lib/
 
 # Build stage for the Vue simualtor
-FROM --platform=$BUILDPLATFORM node:lts-slim as simulator_vue_build
+FROM --platform=$BUILDPLATFORM node:lts-slim AS simulator_vue_build
 
 WORKDIR /app
 
@@ -69,7 +69,7 @@ RUN ls -laR /output/
 
 # The files should now be in /app/public/simulatorvue/
 
-FROM --platform=$BUILDPLATFORM ruby:3.2.1-slim as app
+FROM --platform=$BUILDPLATFORM ruby:3.2.1-slim AS app
 
 # Copy compiled assets and application from builder and Vue simulator build stages
 COPY --from=builder /usr/src/app /usr/src/app

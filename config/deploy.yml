@@ -58,6 +58,9 @@ accessories:
     host: <%= ENV["SERVER_IP"] %>
     port: 2812
 
-healthcheck:
-  port: 3000
-  max_attempts: 8
+proxy:
+  app_port: 3000
+  healthcheck:
+    path: /up
+    interval: 3
+    timeout: 5
