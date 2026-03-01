@@ -30,15 +30,16 @@ echo "=============================================="
 # Set SLACK_DEPLOY_HOOK_URL in your environment to enable Slack notifications.
 if [ -n "$SLACK_DEPLOY_HOOK_URL" ]; then
   echo "[post-deploy] Sending Slack notification..."
-  curl -s -X POST "$SLACK_DEPLOY_HOOK_URL" \
+  curl -s --show-error --connect-timeout 5 --max-time 15 \
+    -X POST "$SLACK_DEPLOY_HOOK_URL" \
     -H 'Content-type: application/json' \
     -d "{\"text\":\"[CircuitVerse] ${KAMAL_PERFORMER} deployed ${KAMAL_SERVICE_VERSION} to ${KAMAL_HOSTS} in ${KAMAL_RUNTIME}s\"}" \
     || echo "[post-deploy] WARNING: Slack notification failed (non-critical)."
 fi
 
 # --- Optional: Sentry Release Tracking ---
-# Set SENTRY_DSN and SENTRY_ORG/SENTRY_PROJECT in your environment to enable.
-if [ -n "$SENTRY_DSN" ] && command -v sentry-cli &> /dev/null; then
+# Set SENTRY_AUTH_TOKEN and SENTRY_ORG/SENTRY_PROJECT in your environment to enable.
+if [ -n "$SENTRY_AUTH_TOKEN" ] && command -v sentry-cli &> /dev/null; then
   echo "[post-deploy] Registering release with Sentry..."
   sentry-cli releases new "${KAMAL_VERSION}" \
     --org "${SENTRY_ORG:-circuitverse}" \
