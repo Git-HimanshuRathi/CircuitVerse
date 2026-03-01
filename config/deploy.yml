@@ -35,7 +35,6 @@ env:
     CIRCUITVERSE_EMAIL_ID: 'support@circuitverse.org'
     AWS_S3_REGION: 'ap-south-1'
     AWS_S3_BUCKET_NAME: 'circuitverse-images-dev'
-    YOSYS_PATH: 'http://172.17.0.1:3040'
   secret:
     - RAILS_MASTER_KEY
     - POSTGRES_URL
@@ -64,3 +63,4 @@ proxy:
     path: /up
     interval: 3
     timeout: 5
+
